@@ -1,0 +1,8 @@
+certbot_version: "*"
+
+certbot_cert_name: ~
+certbot_maintainer_email: ~
+certbot_hosts: []
+certbot_first_time_strategy: 'standalone'
+certbot_obtain_strategy: 'standalone'
+certbot_renewal_strategy: 'webroot'

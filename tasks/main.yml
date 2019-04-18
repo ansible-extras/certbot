@@ -1,0 +1,20 @@
+- name: 'install'
+  apt:
+    name: "certbot{% if certbot_version %}={{ certbot_version }}{% endif %}"
+
+- name: 'register'
+  command: "certbot register --agree-tos -m {{ certbot_maintainer_email }} --no-eff-email"
+  args:
+    creates: '/etc/letsencrypt/accounts/acme-v02.api.letsencrypt.org/'
+
+- name: 'obtain certificates'
+  command: 'certbot certonly -d {{ certbot_hosts|join(",") }} -n --{{ certbot_obtain_strategy }} --cert-name {{ certbot_cert_name|default(certbot_hosts[0]) }}'
+  args:
+    creates: '/etc/letsencrypt/live/{{ certbot_cert_name|default(certbot_hosts[0]) }}/cert.pem'
+
+- name: 'update renewal strategy'
+  lineinfile:
+    path: '/etc/letsencrypt/renewal/{{ certbot_cert_name|default(certbot_hosts[0]) }}.conf'
+    regexp: '^authenticator = '
+    insertafter: '^[renewalparams]$'
+    line: 'authenticator = {{ certbot_renewal_strategy }}'
